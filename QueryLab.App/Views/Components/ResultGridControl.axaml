@@ -5,7 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="QueryLab.App.Views.Components.ResultGridControl">
     
-    <ScrollViewer>
+    <ScrollViewer Background="{DynamicResource AccentButtonBackground}">
         <Grid x:Name="ResultGrid" Margin="5" />
     </ScrollViewer>
 </UserControl>

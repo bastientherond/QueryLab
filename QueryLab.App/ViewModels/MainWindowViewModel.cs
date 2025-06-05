@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -14,6 +16,7 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     private readonly IQueryExecutor _queryExecutor;
     private readonly IDialogService _dialogService;
+    private readonly IStorageService _storageService;
     
     [ObservableProperty]
     private ObservableCollection<SqlEditorViewModel> _openTabs = [];
@@ -21,19 +24,30 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private SqlEditorViewModel? _selectedTab;
     
-    public MainWindowViewModel(IQueryExecutor queryExecutor, IDialogService dialogService)
+    public MainWindowViewModel(IQueryExecutor queryExecutor, IDialogService dialogService,  IStorageService storageService)
     {
         _queryExecutor = queryExecutor;
         _dialogService = dialogService;
-        OpenNewTab(); 
+        _storageService = storageService;
     }
     
     [RelayCommand]
-    private void OpenNewTab()
+    private async Task OpenFileTabAsync()
     {
+        var (content, path) = await _storageService.OpenFileAsync();
+
+        if (string.IsNullOrEmpty(content) || string.IsNullOrEmpty(path))
+            return;
+        
+        // Si un le même fichier est déjà dans l'éditeur on ne le rajoute pas 
+        if(OpenTabs.Any(x => x.Document.FilePath == path))
+            return;
+        
         var document = new SqlEditorDocument
         {
-            Title = $"New Query {OpenTabs.Count + 1}",
+            SqlText = content,
+            Title = Path.GetFileName(path),
+            FilePath = path,
             Connection = new DatabaseConnectionInfo
             {
                 Name = "PostgreSQL Local",
@@ -42,7 +56,7 @@ public partial class MainWindowViewModel : ViewModelBase
             }
         };
 
-        var editorViewModel = new SqlEditorViewModel(document, _queryExecutor, _dialogService);
+        var editorViewModel = new SqlEditorViewModel(document, _queryExecutor, _dialogService, _storageService);
         OpenTabs.Add(editorViewModel);
         SelectedTab = editorViewModel;
     }
@@ -50,8 +64,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void CloseTab(SqlEditorViewModel viewModel)
     {
-        if (OpenTabs.Contains(viewModel))
-            OpenTabs.Remove(viewModel);
+        OpenTabs.Remove(viewModel);
 
         if (SelectedTab == viewModel)
             SelectedTab = OpenTabs.FirstOrDefault();
@@ -65,4 +78,7 @@ public partial class MainWindowViewModel : ViewModelBase
             lifetime.Shutdown();
         }
     }
+
+    [RelayCommand]
+    private void Save() => SelectedTab?.SaveCommand.Execute(null);
 }

@@ -39,7 +39,9 @@ public partial class App : Application
 
             // Maintenant que la fenêtre existe, on peut injecter la référence dans le DialogService
             var dialogService = _host.Services.GetRequiredService<IDialogService>() as DialogService;
+            var storageService = _host.Services.GetRequiredService<IStorageService>() as StorageService;
             dialogService?.SetMainWindow(mainWindow);
+            storageService?.SetMainWindow(mainWindow);
 
             desktop.MainWindow = mainWindow;
         }
@@ -54,6 +56,7 @@ public partial class App : Application
         services.AddSingleton<MainWindowViewModel>();
         services.AddSingleton<IQueryExecutor, QueryExecutor>();
         services.AddSingleton<IDialogService, DialogService>();
+        services.AddSingleton<IStorageService, StorageService>();
 
         // C'est ici que tu brancheras plus tard ton Core, tes Providers, etc.
         DbProviderFactories.RegisterFactory("Npgsql", Npgsql.NpgsqlFactory.Instance);

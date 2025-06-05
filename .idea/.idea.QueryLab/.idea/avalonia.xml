@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="QueryLab.App/App.axaml" value="QueryLab.App/QueryLab.App.csproj" />
+        <entry key="QueryLab.App/Utils/MessageBoxHelper.axaml" value="QueryLab.App/QueryLab.App.csproj" />
+        <entry key="QueryLab.App/Views/Components/ResultGridControl.axaml" value="QueryLab.App/QueryLab.App.csproj" />
+        <entry key="QueryLab.App/Views/Components/SqlEditorView.axaml" value="QueryLab.App/QueryLab.App.csproj" />
+        <entry key="QueryLab.App/Views/Components/TopMenu.axaml" value="QueryLab.App/QueryLab.App.csproj" />
+        <entry key="QueryLab.App/Views/MainWindow.axaml" value="QueryLab.App/QueryLab.App.csproj" />
+        <entry key="QueryLab.App/Views/SqlEditorView.axaml" value="QueryLab.App/QueryLab.App.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

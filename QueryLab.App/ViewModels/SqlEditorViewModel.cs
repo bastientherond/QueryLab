@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using QueryLab.App.Utils;
@@ -13,7 +16,7 @@ using QueryLab.Domain;
 
 namespace QueryLab.App.ViewModels;
 
-public partial class SqlEditorViewModel(SqlEditorDocument document, IQueryExecutor queryExecutor, IDialogService dialogService) : ViewModelBase
+public partial class SqlEditorViewModel(SqlEditorDocument document, IQueryExecutor queryExecutor, IDialogService dialogService, IStorageService storageService) : ViewModelBase
 {
     [ObservableProperty]
     private ObservableCollection<ObservableCollection<KeyValuePair<string, object>>> _rows = [];
@@ -115,5 +118,34 @@ public partial class SqlEditorViewModel(SqlEditorDocument document, IQueryExecut
     private void CancelQuery()
     {
         _cancellationTokenSource?.Cancel();
+    }
+    
+    [RelayCommand]
+    private async Task Save()
+    {
+        if (Document.FilePath != null)
+        {
+            Document.SaveToFile();
+            OnPropertyChanged(nameof(Document.TabTitle));
+        }
+        else
+        {
+            await SaveAsAsync();
+        }
+    }
+
+    [RelayCommand]
+    private async Task SaveAsAsync()
+    {
+        var path = await storageService.SaveFileAsync();
+
+        if (!string.IsNullOrEmpty(path))
+        {
+            await File.WriteAllTextAsync(path, Document.SqlText);
+            Document.FilePath = path;
+            Document.Title = Path.GetFileName(path);
+            Document.MarkClean();
+            OnPropertyChanged(nameof(Document.TabTitle));
+        }
     }
 }

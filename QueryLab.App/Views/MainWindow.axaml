@@ -5,6 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="650"
+        xmlns:behaviors="clr-namespace:QueryLab.App.Behaviors"
         x:Class="QueryLab.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
@@ -22,17 +23,16 @@
         </ResourceDictionary>
     </Window.Resources>
     
-    <Design.DataContext>
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
-
-    <DockPanel>
+    <DockPanel behaviors:KeyGestureBehavior.Gesture="Ctrl+S"
+               behaviors:KeyGestureBehavior.Command="{Binding SaveCommand}">
 
         <!-- Top Menu -->
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="Open"/>
-                <MenuItem Header="Save"/>
+                <MenuItem Header="Open"
+                          Command="{Binding OpenFileTabCommand }"/>
+                <MenuItem Header="Save"
+                          Command="{Binding SaveCommand}"/>
                 <Separator/>
                 <MenuItem Header="Exit"
                           Command="{Binding ExitCommand}"/>
@@ -73,12 +73,14 @@
         </StackPanel>
 
         <!-- Zone principale -->
-        <Border Background="{DynamicResource SystemAccentColorLight2}" CornerRadius="5 0 0 0">
-            <TabControl ItemsSource="{Binding OpenTabs}" SelectedItem="{Binding SelectedTab}">
+        <Border Background="{DynamicResource AccentButtonBackground}" CornerRadius="5 0 0 0">
+            <TabControl ItemsSource="{Binding OpenTabs}" 
+                        SelectedItem="{Binding SelectedTab}" 
+                        BorderThickness="1" BorderBrush="{DynamicResource AccentButtonBorderBrush}">
                 <!-- En-tête des onglets -->
                 <TabControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:SqlEditorViewModel}">
-                        <TextBlock Text="{Binding Document.Title}" />
+                        <TextBlock Text="{Binding Document.TabTitle}" />
                     </DataTemplate>
                 </TabControl.ItemTemplate>
 
