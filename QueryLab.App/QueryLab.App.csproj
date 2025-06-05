@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Folder Include="Converters\" />
         <Folder Include="Models\" />
         <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
@@ -29,6 +30,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\QueryLab.Core\QueryLab.Core.csproj" />
+      <ProjectReference Include="..\QueryLab.DataProviders\QueryLab.DataProviders.csproj" />
       <ProjectReference Include="..\QueryLab.Domain\QueryLab.Domain.csproj" />
+      <ProjectReference Include="..\QueryLab.Infrastructure\QueryLab.Infrastructure.csproj" />
     </ItemGroup>
 </Project>

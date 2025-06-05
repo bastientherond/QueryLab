@@ -1,15 +1,26 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using QueryLab.App.Utils;
+using QueryLab.Core;
 using QueryLab.Domain;
 
 namespace QueryLab.App.ViewModels;
 
-public partial class SqlEditorViewModel(SqlEditorDocument document) : ViewModelBase
+public partial class SqlEditorViewModel(SqlEditorDocument document, IQueryExecutor queryExecutor, IDialogService dialogService) : ViewModelBase
 {
+    [ObservableProperty]
+    private ObservableCollection<ObservableCollection<KeyValuePair<string, object>>> _rows = [];
+    
+    [ObservableProperty]
+    private ObservableCollection<string> _columns = [];
+    
     [ObservableProperty]
     private SqlEditorDocument _document  = document;
 
@@ -21,10 +32,21 @@ public partial class SqlEditorViewModel(SqlEditorDocument document) : ViewModelB
     [RelayCommand(CanExecute = nameof(CanExecuteQuery))]
     private async Task ExecuteQueryAsync()
     {
-        if (Document.Connection == null)
+        try
         {
-            Document.ErrorMessage = "Aucune connexion sélectionnée.";
-            OnPropertyChanged(nameof(Document));
+            if (Document.Connection == null)
+            {
+                throw new Exception("Aucune connexion sélectionnée.");
+            }
+
+            if (string.IsNullOrWhiteSpace(Document.SqlText))
+            {
+                throw new Exception("La requête SQL est vide.");
+            }
+        }
+        catch (Exception ex)
+        {
+            await dialogService.ShowErrorAsync(ex.Message);
             return;
         }
 
@@ -37,19 +59,22 @@ public partial class SqlEditorViewModel(SqlEditorDocument document) : ViewModelB
             _cancellationTokenSource = new CancellationTokenSource();
             var stopwatch = Stopwatch.StartNew();
 
-            // Ici tu brancheras ton vrai QueryExecutor plus tard.
-            await Task.Delay(1000, _cancellationTokenSource.Token);
-            Document.Result = new QueryResult();
+            Document.Result = await queryExecutor.ExecuteAsync(
+                Document.SqlText,
+                Document.Connection,
+                _cancellationTokenSource.Token);
 
             stopwatch.Stop();
             Document.ExecutionTime = stopwatch.Elapsed;
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException oce)
         {
+            await dialogService.ShowErrorAsync(oce.Message);
             Document.ErrorMessage = "Exécution annulée.";
         }
         catch (Exception ex)
         {
+            await dialogService.ShowErrorAsync(ex.Message);
             Document.ErrorMessage = ex.Message;
         }
         finally
@@ -59,6 +84,28 @@ public partial class SqlEditorViewModel(SqlEditorDocument document) : ViewModelB
             _cancellationTokenSource = null;
         }
 
+        Rows.Clear();
+        Columns.Clear();
+
+        if (Document.Result?.Data != null)
+        {
+            // Génération des colonnes
+            foreach (DataColumn column in Document.Result.Data.Columns)
+            {
+                Columns.Add(column.ColumnName);
+            }
+
+            // Génération des rows
+            foreach (DataRow row in Document.Result.Data.Rows)
+            {
+                var kvpList = new ObservableCollection<KeyValuePair<string, object>>();
+                foreach (DataColumn column in Document.Result.Data.Columns)
+                {
+                    kvpList.Add(new KeyValuePair<string, object>(column.ColumnName, row[column]));
+                }
+                Rows.Add(kvpList);
+            }
+        }
         OnPropertyChanged(nameof(Document));
     }
 

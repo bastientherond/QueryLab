@@ -74,7 +74,7 @@
 
         <!-- Zone principale -->
         <Border Background="{DynamicResource SystemAccentColorLight2}" CornerRadius="5 0 0 0">
-            <TabControl Items="{Binding OpenTabs}" SelectedItem="{Binding SelectedTab}">
+            <TabControl ItemsSource="{Binding OpenTabs}" SelectedItem="{Binding SelectedTab}">
                 <!-- En-tête des onglets -->
                 <TabControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:SqlEditorViewModel}">

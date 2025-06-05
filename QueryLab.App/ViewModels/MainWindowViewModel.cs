@@ -4,21 +4,28 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using QueryLab.App.Utils;
+using QueryLab.Core;
 using QueryLab.Domain;
 
 namespace QueryLab.App.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    private readonly IQueryExecutor _queryExecutor;
+    private readonly IDialogService _dialogService;
+    
     [ObservableProperty]
     private ObservableCollection<SqlEditorViewModel> _openTabs = [];
 
     [ObservableProperty]
     private SqlEditorViewModel? _selectedTab;
     
-    public MainWindowViewModel()
+    public MainWindowViewModel(IQueryExecutor queryExecutor, IDialogService dialogService)
     {
-        OpenNewTab();
+        _queryExecutor = queryExecutor;
+        _dialogService = dialogService;
+        OpenNewTab(); 
     }
     
     [RelayCommand]
@@ -26,10 +33,16 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         var document = new SqlEditorDocument
         {
-            Title = $"New Query {OpenTabs.Count + 1}"
+            Title = $"New Query {OpenTabs.Count + 1}",
+            Connection = new DatabaseConnectionInfo
+            {
+                Name = "PostgreSQL Local",
+                Provider = "Npgsql",
+                ConnectionString = "Host=localhost;Port=5432;Username=querylab;Password=querylab;Database=querylabdb"
+            }
         };
 
-        var editorViewModel = new SqlEditorViewModel(document);
+        var editorViewModel = new SqlEditorViewModel(document, _queryExecutor, _dialogService);
         OpenTabs.Add(editorViewModel);
         SelectedTab = editorViewModel;
     }
