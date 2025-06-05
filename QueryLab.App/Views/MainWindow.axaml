@@ -1,20 +1,95 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:QueryLab.App.ViewModels"
+        xmlns:views="using:QueryLab.App.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="650"
         x:Class="QueryLab.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="QueryLab.App">
 
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <StreamGeometry x:Key="BookDatabaseRegular">M16.5 9V13C16.5 13.8914 15.8405 14.528 15.1537 14.8978C14.4363 15.2841 13.4967 15.5 12.5 15.5C11.5033 15.5 10.5637 15.2841 9.84633 14.8978C9.1595 14.528 8.5 13.8914 8.5 13V9C8.5 8.10864 9.1595 7.47204 9.84633 7.10221C10.5637 6.71593 11.5033 6.5 12.5 6.5C13.4967 6.5 14.4363 6.71593 15.1537 7.10221C15.8405 7.47204 16.5 8.10864 16.5 9ZM10.5575 8.42292C10.068 8.68646 10 8.92486 10 9C10 9.07514 10.068 9.31354 10.5575 9.57708C11.0164 9.82418 11.7018 10 12.5 10C13.2982 10 13.9836 9.82418 14.4425 9.57708C14.932 9.31354 15 9.07514 15 9C15 8.92486 14.932 8.68646 14.4425 8.42292C13.9836 8.17582 13.2982 8 12.5 8C11.7018 8 11.0164 8.17582 10.5575 8.42292ZM15 10.9763C14.3046 11.3132 13.427 11.5 12.5 11.5C11.573 11.5 10.6954 11.3132 10 10.9763V13C10 13.0751 10.068 13.3135 10.5575 13.5771C11.0164 13.8242 11.7018 14 12.5 14C13.2982 14 13.9836 13.8242 14.4425 13.5771C14.932 13.3135 15 13.0751 15 13V10.9763Z M4 4.5C4 3.11929 5.11929 2 6.5 2H18C19.3807 2 20.5 3.11929 20.5 4.5V18.75C20.5 19.1642 20.1642 19.5 19.75 19.5H5.5C5.5 20.0523 5.94772 20.5 6.5 20.5H19.75C20.1642 20.5 20.5 20.8358 20.5 21.25C20.5 21.6642 20.1642 22 19.75 22H6.5C5.11929 22 4 20.8807 4 19.5V4.5ZM5.5 18H19V4.5C19 3.94772 18.5523 3.5 18 3.5H6.5C5.94772 3.5 5.5 3.94772 5.5 4.5V18Z</StreamGeometry>
+                    <StreamGeometry x:Key="HistoryRegular">M12,3 C16.9705627,3 21,7.02943725 21,12 C21,16.9705627 16.9705627,21 12,21 C10.2903875,21 8.64944804,20.5217936 7.23080614,19.6337823 C6.65294072,19.2720624 6.11769706,18.8456754 5.63566512,18.3635872 C5.15289898,17.8807646 4.72601217,17.3445768 4.36400875,16.7656632 C3.47740079,15.3478054 3,13.7081751 3,12 C3,11.725846 3.01227986,11.4530822 3.03669655,11.1822711 C3.07389172,10.769731 3.43847425,10.4654537 3.85101443,10.5026489 C4.2635546,10.5398441 4.56783184,10.9044266 4.53063667,11.3169668 C4.51025648,11.5430081 4.5,11.7708281 4.5,12 C4.5,13.4248663 4.89726709,14.7892778 5.63582603,15.9703766 C5.93763522,16.4530279 6.2936779,16.9002326 6.69638725,17.3029889 C7.09848441,17.7051331 7.54490219,18.0607594 8.02668093,18.362333 C9.20843557,19.1020627 10.5739361,19.5 12,19.5 C16.1421356,19.5 19.5,16.1421356 19.5,12 C19.5,7.85786438 16.1421356,4.5 12,4.5 C9.60270786,4.5 7.39952516,5.63281093 5.99774512,7.50196302 L8.75418677,7.50209339 C9.16840034,7.50209339 9.50418677,7.83787982 9.50418677,8.25209339 C9.50418677,8.63178915 9.22203289,8.94558435 8.85595733,8.99524677 L8.75418677,9.00209339 L4.25,9.00209339 C3.87030423,9.00209339 3.55650904,8.71993951 3.50684662,8.35386394 L3.5,8.25209339 L3.5,3.75209339 C3.5,3.33787982 3.83578644,3.00209339 4.25,3.00209339 C4.62969577,3.00209339 4.94349096,3.28424727 4.99315338,3.65032283 L5,3.75209339 L4.99900166,6.34348083 C6.68586937,4.25603382 9.23627771,3 12,3 Z M11.25,7 C11.6295,7 11.9434583,7.28233333 11.9931493,7.64827431 L12,7.75 L12,12 L14.25,12 C14.664,12 15,12.336 15,12.75 C15,13.1295 14.7176667,13.4434583 14.3517257,13.4931493 L14.25,13.5 L11.25,13.5 C10.8705,13.5 10.5565417,13.2176667 10.5068507,12.8517257 L10.5,12.75 L10.5,7.75 C10.5,7.336 10.836,7 11.25,7 Z</StreamGeometry>
+                    <StreamGeometry x:Key="FavoritesRegular">M12.6719 2.75961L15.2533 7.999H15.2383L15.24 8.002L21.2479 8.00216C21.6276 8.00216 21.9414 8.28432 21.991 8.65039L21.9979 8.75216C21.9979 9.13186 21.7157 9.44565 21.3496 9.49532L21.2479 9.50216H14.7683C14.516 9.50216 14.2833 9.37568 14.1454 9.17002L14.0923 9.07717L13.2943 7.418L11.9991 4.78838L9.81382 9.2251C9.70456 9.44691 9.49299 9.60063 9.24827 9.63599L4.3534 10.3433L7.89768 13.7927C8.07488 13.9651 8.15569 14.2138 8.1137 14.4575L7.27381 19.3314L11.6129 17.0449C11.5396 17.2672 11.5 17.5043 11.5 17.75C11.5 18.0864 11.5738 18.4055 11.7061 18.692L6.62564 21.3682C6.07517 21.6581 5.43135 21.1904 5.53701 20.5772L6.5684 14.5921L2.21602 10.3563C1.77015 9.92234 2.01606 9.16549 2.63184 9.07651L8.64275 8.20791L11.3263 2.75961C11.6012 2.20147 12.397 2.20147 12.6719 2.75961ZM21.25 17C21.6642 17 22 17.3358 22 17.75C22 18.1297 21.7178 18.4435 21.3518 18.4932L21.25 18.5H13.75C13.3358 18.5 13 18.1642 13 17.75C13 17.3703 13.2822 17.0565 13.6482 17.0068L13.75 17H21.25ZM21.2479 12.5092C21.6621 12.5092 21.9979 12.845 21.9979 13.2592C21.9979 13.6389 21.7157 13.9527 21.3496 14.0023L21.2479 14.0092H13.7479C13.3337 14.0092 12.9979 13.6734 12.9979 13.2592C12.9979 12.8795 13.28 12.5657 13.6461 12.516L13.7479 12.5092H21.2479Z</StreamGeometry>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <DockPanel>
 
+        <!-- Top Menu -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="Open"/>
+                <MenuItem Header="Save"/>
+                <Separator/>
+                <MenuItem Header="Exit"
+                          Command="{Binding ExitCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="Undo"/>
+                <MenuItem Header="Redo"/>
+            </MenuItem>
+            <MenuItem Header="_View">
+            </MenuItem>
+            <MenuItem Header="_Help">
+            </MenuItem>
+        </Menu>
+
+        <!-- Left Sidebar -->
+        <StackPanel DockPanel.Dock="Left">
+            <Button Width="48" Height="48" Margin="10" Background="Transparent">
+                <Path Data="{StaticResource FavoritesRegular}"
+                      Fill="{DynamicResource ButtonForeground}" 
+                      Width="24" Height="24" 
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center" />
+            </Button>
+            <Button Width="48" Height="48" Margin="10" Background="Transparent">
+                <Path Data="{StaticResource HistoryRegular}"
+                      Fill="{DynamicResource ButtonForeground}" 
+                      Width="24" Height="24" 
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center" />
+            </Button>
+            <Button Width="48" Height="48" Margin="10" Background="Transparent">
+                <Path Data="{StaticResource BookDatabaseRegular}"
+                      Fill="{DynamicResource ButtonForeground}" 
+                      Width="24" Height="24" 
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center" />
+            </Button>
+        </StackPanel>
+
+        <!-- Zone principale -->
+        <Border Background="{DynamicResource SystemAccentColorLight2}" CornerRadius="5 0 0 0">
+            <TabControl Items="{Binding OpenTabs}" SelectedItem="{Binding SelectedTab}">
+                <!-- En-tête des onglets -->
+                <TabControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:SqlEditorViewModel}">
+                        <TextBlock Text="{Binding Document.Title}" />
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+
+                <!-- Contenu des onglets -->
+                <TabControl.ContentTemplate>
+                    <DataTemplate DataType="{x:Type vm:SqlEditorViewModel}">
+                        <views:SqlEditorView />
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+        </Border>
+
+    </DockPanel>
 </Window>

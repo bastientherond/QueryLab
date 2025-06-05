@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:conv="using:QueryLab.App.Converters"
+             xmlns:vm="clr-namespace:QueryLab.App.ViewModels"
+             x:DataType="vm:SqlEditorViewModel"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="QueryLab.App.Views.SqlEditorView"
+             d:DataContext="{d:DesignInstance vm:SqlEditorViewModel}">
+    
+    <UserControl.Resources>
+        <conv:InverseBoolConverter x:Key="InverseBoolConverter"/>
+    </UserControl.Resources>
+    
+    <Grid RowDefinitions="Auto,*">
+        <StackPanel Orientation="Horizontal" Margin="5">
+            <Button Content="Exécuter" Command="{Binding ExecuteQueryCommand}" IsEnabled="{Binding IsExecuting, Converter={StaticResource InverseBoolConverter}}" />
+            <Button Content="Annuler" Command="{Binding CancelQueryCommand}" IsEnabled="{Binding IsExecuting}" Margin="5,0,0,0" />
+        </StackPanel>
+
+        <TextBox Grid.Row="1"
+                 Text="{Binding Document.SqlText, Mode=TwoWay}" 
+                 AcceptsReturn="True" 
+                 VerticalAlignment="Stretch"
+                 HorizontalAlignment="Stretch"
+                 FontFamily="Consolas"
+                 FontSize="14"/>
+    </Grid>
+</UserControl>
